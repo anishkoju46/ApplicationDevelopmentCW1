@@ -1,0 +1,283 @@
+@page "/staff/orderCoffee";
+@namespace CourseWorkAppDev1.Pages.staff
+@using CourseWorkAppDev1.Modules.Coffee.model;
+@using CourseWorkAppDev1.Modules.Admin.model;
+@using CourseWorkAppDev1.Modules.Admin.service;
+@using CourseWorkAppDev1.Utils.HelperServices;
+@using CourseWorkAppDev1.Modules.Coffee.service;
+@using CourseWorkAppDev1.Pages.coffee;
+@using CourseWorkAppDev1.Pages.admin;
+@using CourseWorkAppDev1.Utils.Model;
+@using System.Diagnostics
+@using CourseWorkAppDev1.Modules.Staff.service;
+@inject AdminService adminService;
+@inject NotificationService notificationService;
+@inject SessionService sessionService;
+@inject CoffeeService coffeeService;
+@inject ActionService actionService;
+@inject StaffService staffService;
+
+<h3>Menue</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>CoffeeType</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (coffeeList != null && coffeeList.Count > 0)
+        {
+            @foreach (var coffee in coffeeList)
+            {
+                <tr>
+                    <td>@coffee.Name</td>
+                    <td>@coffee.CoffeeType</td>
+                    <td>@coffee.Price</td>
+                    <td>
+                        <button @onclick="()=>AddToCart(coffee)" class="edit-button">Add to Cart</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<h3>Cart</h3>
+<p class="@messageClass">@this.message</p>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>CoffeeType</th>
+            <th>Price</th>
+            <th>Add-ins</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (orderList != null && orderList.Count > 0)
+        {
+            for (int i = 0; i < orderList.Count; i++)
+            {
+                var orderedCoffee = orderList[i];
+                <tr>
+                    <td>@orderedCoffee.Name</td>
+                    <td>@orderedCoffee.CoffeeType</td>
+                    <td>@orderedCoffee.Price</td>
+                    @if (orderedCoffee.AddIns != null && orderedCoffee.AddIns.Count > 0)
+                    {
+                        <td>
+                            @foreach (var addin in orderedCoffee.AddIns)
+                            {
+                                @addin.Name
+
+                                <br />
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            No Add-ins
+                        </td>
+                    }
+                    <td>
+                        <button @onclick="()=>RemoveFromCart(orderedCoffee)" class="delete-button">Remove</button>
+                        <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add Addings</button>
+                        @if (showAddModal)
+                        {
+                            <div class="modal" tabindex="-1" role="dialog" style="display:block;">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Add Add-ins</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Price</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (addingLists != null && addingLists.Count > 0)
+                                                    {
+                                                        for (int j = 0; j < addingLists.Count; j++)
+                                                        {
+                                                            var addins = addingLists[j];
+                                                            <tr>
+                                                                <td>@addins.Name</td>
+                                                                <td>@addins.Price</td>
+                                                                <td><button @onclick="()=>AddAddings(addins,orderedCoffee)" class="btn btn-secondary">Add</button></td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        <p style="text-align: center;">Total price: @CalculateTotalPrice()</p>
+    </tbody>
+</table>
+@if (!isMember)
+{
+    <button @onclick="OpenMemberModel" class="edit-button">Check Member</button>
+}
+@if (isMember)
+{
+    <button @onclick="Order" class="edit-button">Order Coffee</button>
+}
+@if (showMemberModel)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Staff</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="email" @bind="CustomerModel.Email" placeholder="Enter email" />
+                </div>
+                <button type="button" class="edit-button" @onclick="()=>CheckUserExist(CustomerModel)">Order</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    string message = "";
+    string messageClass = "";
+    List<CommonModel>? coffeeList = new List<CommonModel>();
+    bool showMemberModel = false;
+    bool showAddModal = false;
+    bool isMember = false;
+    string email = "";
+    List<CommonModel> orderList = new List<CommonModel>();
+    List<CommonModel>? addingLists = new List<CommonModel>();
+    UserModel CustomerModel = new UserModel();
+    protected async override void OnInitialized()
+    {
+        notificationService.Clear();
+    }
+    protected async override Task OnParametersSetAsync()
+    {
+        coffeeList = await coffeeService.getList("coffee.json");
+        orderList = await staffService.getOrderedCoffee();
+        addingLists = await coffeeService.getList("addins.json");
+        Trace.WriteLine("This is Addings count: " + addingLists.Count);
+    }
+
+    protected async void AddToCart(CommonModel coffee)
+    {
+        Trace.WriteLine("AddToCart");
+        var coffeeCopy = new CommonModel
+            {
+                Name = coffee.Name,
+                CoffeeType = coffee.CoffeeType,
+                Size = coffee.Size,
+                Price = coffee.Price,
+                index = orderList.Count
+            };
+        Trace.WriteLine("This is index: " + coffeeCopy.index);
+        staffService.setOrderedList(coffeeCopy);
+        orderList = await staffService.getOrderedCoffee();
+        foreach (var item in orderList)
+        {
+            Trace.WriteLine(item.Name);
+        }
+    }
+    public decimal CalculateTotalPrice()
+    {
+        decimal totalPrice = 0;
+
+        foreach (var coffee in orderList)
+        {
+            totalPrice += coffee.Price;
+
+            if (coffee.AddIns != null)
+            {
+                foreach (var addin in coffee.AddIns)
+                {
+                    totalPrice += addin.Price;
+                }
+            }
+        }
+
+        return totalPrice;
+    }
+    protected async void RemoveFromCart(CommonModel orderedCoffee)
+    {
+        orderList = await staffService.removeOrderList(orderedCoffee.index);
+    }
+
+    protected void AddAddings(CommonModel addings, CommonModel coffee)
+    {
+        Trace.WriteLine("AddAddings: " + addings.index);
+        orderList[coffee.index].AddIns.Add(addings);
+        foreach (var item in orderList[coffee.index].AddIns)
+        {
+            Trace.WriteLine("This is Item: " + item);
+        }
+        CloseModal();
+    }
+    protected async void CheckUserExist(UserModel user)
+    {
+        CloseModal();
+        var result = await staffService.isUserRegistered(user.Email);
+        if (result.Success)
+        {
+            decimal totalPrice = this.CalculateTotalPrice();
+            @* Order(orderList,user.Email,totalPrice); *@
+            isMember = true;
+            email = user.Email;
+            StateHasChanged();
+            this.message = result.Message;
+            this.messageClass = "success-message";
+        }
+        else
+        {
+            this.message = result.Message;
+            this.messageClass = "fail-message";
+
+        }
+        StateHasChanged();
+    }
+    protected async void Order()
+    {
+        decimal totalPrice = this.CalculateTotalPrice();
+        await staffService.TakeOrder(orderList, email, totalPrice);
+        await staffService.clearOrderList();
+        StateHasChanged();
+    }
+
+    public void OpenAddModal()
+    {
+        showAddModal = true;
+    }
+    public void OpenMemberModel()
+    {
+        showMemberModel = true;
+    }
+    public void CloseModal()
+    {
+        showAddModal = false;
+        showMemberModel = false;
+    }
+}

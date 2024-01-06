@@ -1,0 +1,216 @@
+@page "/coffee/addins"
+@namespace CourseWorkAppDev1.Pages.coffee
+@using CourseWorkAppDev1.Modules.Coffee.model;
+@using CourseWorkAppDev1.Modules.Admin.model;
+@using CourseWorkAppDev1.Modules.Admin.service;
+@using CourseWorkAppDev1.Utils.HelperServices;
+@using CourseWorkAppDev1.Modules.Coffee.service;
+@using CourseWorkAppDev1.Pages.coffee;
+@using CourseWorkAppDev1.Pages.admin;
+@using System.Diagnostics
+@inject AdminService adminService;
+@inject NotificationService notificationService;
+@inject SessionService sessionService;
+@inject CoffeeService coffeeService;
+@inject ActionService actionService;
+<h3>ADD-INs LIST</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (addinsList != null && addinsList.Count > 0)
+        {
+            @foreach (var addins in addinsList)
+            {
+                <tr>
+                    <td>@addins.Name</td>
+                    <td>@addins.Price</td>
+                    <td>
+                        <button @onclick="() => OpenEditModel(addins)" class="edit-button">Edit</button>
+                        <button @onclick="()=>deleteAddins(addins)" class="delete-button">Delete</button>
+                        @if (showEditModel)
+                        {
+                            <div class="modal" tabindex="-1" role="dialog" style="display:block;">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Add Coffee</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <CoffeeInput ButtonLabel="Edit Coffee" Model="addinsModel" OnSubmit="editAddins"
+                                                message="notificationService.Message"
+                                                messageClass="notificationService.messageClass"></CoffeeInput>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (!isAuthorization)
+{
+    <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add New Add-Ins</button>
+    @if (showAddModal)
+    {
+        <div class="modal" tabindex="-1" role="dialog" style="display:block;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Add-Ins</h5>
+                    </div>
+                    <div class="modal-body">
+                        <CoffeeInput ButtonLabel="Add New Add-Ins" Model="addinsModel" OnSubmit="addAddins"
+                            message="notificationService.Message" messageClass="notificationService.messageClass"></CoffeeInput>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@if (isAuthorization && (sessionService.defaultNeedAuthorized()))
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Login</h5>
+                </div>
+                <div class="modal-body">
+                    <AdminForm ButtonLabel="Log in" Model="Model" OnSubmit="Login" message="@message"
+                        messageClass="@messageClass"></AdminForm>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private string? message = "";
+    private string? messageClass = "";
+    AdminModel Model = new AdminModel();
+    bool isAuthorization = false;
+    bool showAddModal = false;
+    bool showEditModel = false;
+    CommonModel addinsModel = new CommonModel();
+    List<CommonModel>? addinsList = new List<CommonModel>();
+    protected async override void OnInitialized()
+    {
+        notificationService.Clear();
+    }
+    protected async override Task OnParametersSetAsync()
+    {
+        sessionService.setOnlyCoffee(false);
+        addinsList = await coffeeService.getList("addins.json");
+    }
+    public async Task<bool> NeedAuthentication()
+    {
+        if (sessionService.defaultNeedAuthorized())
+        {
+            isAuthorization = true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public async void deleteAddins(CommonModel addins)
+    {
+        var needAuth = await this.NeedAuthentication();
+        if (!needAuth)
+        {
+            var result = await actionService.Delete<BaseModel>(addins.Id, "addins.json");
+            if (result.Success)
+            {
+                addinsList.Remove(addins);
+                StateHasChanged();
+            }
+            else
+            {
+                notificationService.Notify(result.Message, "success-message");
+            }
+        }
+
+    }
+    public async void addAddins()
+    {
+        Trace.WriteLine("Now You Can Add Coffee");
+        var result = await coffeeService.addCoffee(addinsModel, "addins.json");
+        notificationService.Notify(result.Message, "success-message");
+        notificationService.Clear();
+        Trace.WriteLine("This is Result: " + notificationService.Message);
+        addinsList = await coffeeService.getList("addins.json");
+        sessionService.setNeedAuthorized(false);
+        CloseModal();
+        StateHasChanged(); //Because UI is not able to fetch coffee so we need to make it sure it will fetch the added coffees.
+
+    }
+    public async void editAddins()
+    {
+        var result = await coffeeService.Edit(addinsModel.Id, addinsModel, "addins.json");
+        notificationService.Notify(result.Message, "success-message");
+        addinsList = await coffeeService.getList("addins.json");
+        CloseModal();
+        StateHasChanged();
+    }
+    //This is comment
+    public async Task Login()
+    {
+        var result = await actionService.Login<AdminModel>(Model);
+        if (result.Success)
+        {
+            sessionService.setNeedAuthorized(false);
+            message = result.Message;
+            messageClass = "success-message";
+            CloseModal();
+        }
+        else
+        {
+            message = result.Message;
+            messageClass = "error-message";
+        }
+    }
+    public async void OpenAddModal()
+    {
+        var result = await this.NeedAuthentication();
+        if (!result)
+        {
+            showAddModal = true;
+        }
+
+    }
+    public async void OpenEditModel(CommonModel addins)
+    {
+        var result = await this.NeedAuthentication();
+        if (!result)
+        {
+            addinsModel = addins;
+            showEditModel = true;
+        }
+
+    }
+
+    public void CloseModal()
+    {
+        showAddModal = false;
+        showEditModel = false;
+        isAuthorization = false;
+    }
+}

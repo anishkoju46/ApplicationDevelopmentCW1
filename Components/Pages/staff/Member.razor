@@ -1,0 +1,68 @@
+@page "/staff/addMember"
+@namespace CourseWorkAppDev1.Pages.staff
+@using CourseWorkAppDev1.Pages.admin;
+@using CourseWorkAppDev1.Modules.Admin.model
+@using CourseWorkAppDev1.Modules.Admin.service;
+@using CourseWorkAppDev1.Utils.Model;
+@using CourseWorkAppDev1.Utils.HelperServices;
+@inject NavigationManager navigationManager
+@inject AdminService adminService;
+@inject NotificationService notificationService;
+@inject SessionService sessionService;
+@using Microsoft.Extensions.Logging
+@using System.Diagnostics
+@inject SessionService sessionService;
+@inject ActionService actionService;
+<h3>Register Member</h3>
+
+<AdminForm ButtonLabel="Add Customer" Model="Model" OnSubmit="HandleSubmit" message="@message"
+    messageClass="@messageClass" />
+
+@code {
+    private string? message = "";
+    private string? messageClass = "";
+    UserModel Model = new UserModel();
+    protected override void OnInitialized()
+    {
+        message = notificationService.Message;
+        messageClass = notificationService.MessageClass;
+        notificationService.Clear();
+    }
+    protected async override Task OnParametersSetAsync()
+    {
+        sessionService.setCustomerOnly(true);
+    }
+
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var result = await actionService.Register<UserModel>(Model);
+            if (result.Success)
+            {
+                sessionService.setAdminRegistered();
+                message = result.Message;
+                messageClass = "success-message";
+                notificationService.Notify(message, messageClass);
+                navigationManager.NavigateTo("/admin/login");
+
+            }
+            else
+            {
+                message = result.Message;
+                messageClass = "error-message";
+                notificationService.Notify(message, messageClass);
+                navigationManager.NavigateTo("/admin/login");
+
+            }
+        }
+        catch (Exception error)
+        {
+            message = error.Message;
+        }
+
+    }
+
+
+}

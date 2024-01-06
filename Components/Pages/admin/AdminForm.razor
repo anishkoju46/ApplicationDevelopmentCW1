@@ -1,0 +1,37 @@
+﻿@namespace CourseWorkAppDev1.Pages.admin
+@using CourseWorkAppDev1.Modules.Admin.model
+@using CourseWorkAppDev1.Utils.Model
+<EditForm Model="Model" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <p class="@messageClass">@message</p>
+        <label for="username">Username:</label>
+        <input required id="username" @bind="Model.Username" />
+        <ValidationMessage For="@(() => Model.Username)" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input required id="password" type="password" @bind="Model.Password" />
+        <ValidationMessage For="@(() => Model.Password)" />
+    </div>
+    <div class="form-group">
+        <label for="userType">UserType:</label>
+        <input required id="userType" type="text" @bind="Model.userType" />
+        <ValidationMessage For="@(() => Model.userType)" />
+    </div>
+    <button type="submit">@ButtonLabel</button>
+</EditForm>
+@code {
+    [Parameter]
+    public string? ButtonLabel { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    [Parameter]
+    public UserModel Model { get; set; } = new UserModel { userType = null, Password=null };
+    [Parameter]
+    public string? message { get; set; }
+    [Parameter]
+    public string? messageClass { get; set; }
+}

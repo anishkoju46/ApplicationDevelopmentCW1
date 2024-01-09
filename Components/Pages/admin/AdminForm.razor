@@ -1,6 +1,8 @@
 ﻿@namespace CourseWorkAppDev1.Pages.admin
 @using CourseWorkAppDev1.Modules.Admin.model
+@using CourseWorkAppDev1.Utils.HelperServices;
 @using CourseWorkAppDev1.Utils.Model
+@inject SessionService sessionService;
 <EditForm Model="Model" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
     <div class="form-group">
@@ -9,16 +11,31 @@
         <input required id="username" @bind="Model.Username" />
         <ValidationMessage For="@(() => Model.Username)" />
     </div>
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input required id="password" type="password" @bind="Model.Password" />
-        <ValidationMessage For="@(() => Model.Password)" />
-    </div>
-    <div class="form-group">
-        <label for="userType">UserType:</label>
-        <input required id="userType" type="text" @bind="Model.userType" />
-        <ValidationMessage For="@(() => Model.userType)" />
-    </div>
+    @if (!sessionService.getCustomerOnly())
+    {
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input required id="password" type="password" @bind="Model.Password" />
+            <ValidationMessage For="@(() => Model.Password)" />
+        </div>
+        <div class="form-group">
+            <label for="userType">UserType:</label>
+            <select @bind="Model.userType">
+                <option value="">Choose user type</option>
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
+            </select>
+            <ValidationMessage For="@(() => Model.userType)" />
+        </div>
+    }
+    @if (sessionService.getCustomerOnly())
+    {
+        <div class="form-group">
+            <label for="Email">Email:</label>
+            <input required id="Email" type="text" @bind="Model.Email" />
+            <ValidationMessage For="@(() => Model.Email)" />
+        </div>
+    }
     <button type="submit">@ButtonLabel</button>
 </EditForm>
 @code {
@@ -29,7 +46,7 @@
     public EventCallback OnSubmit { get; set; }
 
     [Parameter]
-    public UserModel Model { get; set; } = new UserModel { userType = null, Password=null };
+    public UserModel Model { get; set; } = new UserModel { userType = UserType.admin, Password = null };
     [Parameter]
     public string? message { get; set; }
     [Parameter]

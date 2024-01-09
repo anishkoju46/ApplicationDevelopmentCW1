@@ -1,1 +1,1 @@
-[{"Id":1}]
+[{"Name":"chocolate","CoffeeType":null,"Size":null,"Price":100,"index":0,"AddIns":[],"Id":1},{"Name":"chips","CoffeeType":null,"Size":null,"Price":150,"index":0,"AddIns":[],"Id":2},{"Name":"ice-cream","CoffeeType":null,"Size":null,"Price":280,"index":0,"AddIns":[],"Id":3}]

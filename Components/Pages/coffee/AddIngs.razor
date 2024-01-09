@@ -13,7 +13,7 @@
 @inject SessionService sessionService;
 @inject CoffeeService coffeeService;
 @inject ActionService actionService;
-<h3>ADD-INs LIST</h3>
+<h3>Add-ins</h3>
 <table>
     <thead>
         <tr>
@@ -61,17 +61,17 @@
 </table>
 @if (!isAuthorization)
 {
-    <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add New Add-Ins</button>
+    <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add Coffee</button>
     @if (showAddModal)
     {
         <div class="modal" tabindex="-1" role="dialog" style="display:block;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add New Add-Ins</h5>
+                        <h5 class="modal-title">Add Coffee</h5>
                     </div>
                     <div class="modal-body">
-                        <CoffeeInput ButtonLabel="Add New Add-Ins" Model="addinsModel" OnSubmit="addAddins"
+                        <CoffeeInput ButtonLabel="Add Coffee" Model="addinsModel" OnSubmit="addAddins"
                             message="notificationService.Message" messageClass="notificationService.messageClass"></CoffeeInput>
                     </div>
                     <div class="modal-footer">
@@ -136,7 +136,7 @@
         var needAuth = await this.NeedAuthentication();
         if (!needAuth)
         {
-            var result = await actionService.Delete<BaseModel>(addins.Id, "addins.json");
+            var result = await actionService.Delete<AddinsModel>(addins.Id, "addins.json");
             if (result.Success)
             {
                 addinsList.Remove(addins);
@@ -165,10 +165,13 @@
     public async void editAddins()
     {
         var result = await coffeeService.Edit(addinsModel.Id, addinsModel, "addins.json");
-        notificationService.Notify(result.Message, "success-message");
-        addinsList = await coffeeService.getList("addins.json");
-        CloseModal();
-        StateHasChanged();
+        if (result.Success)
+        {
+            notificationService.Notify(result.Message, "success-message");
+            addinsList = await coffeeService.getList("addins.json");
+            CloseModal();
+            StateHasChanged();
+        }
     }
     //This is comment
     public async Task Login()

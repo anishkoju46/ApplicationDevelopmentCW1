@@ -88,6 +88,7 @@ public class CoffeeService
         }
     }
 
+
     public async Task<CustomType> Edit(int id, CommonModel model, string fileName)
     {
         try
@@ -108,6 +109,10 @@ public class CoffeeService
                     if (itemToEdit.GetType().GetProperty("CoffeeType") != null)
                     {
                         itemToEdit.CoffeeType = model.CoffeeType;
+                    }
+                    if (itemToEdit.GetType().GetProperty("Size") != null)
+                    {
+                        itemToEdit.Size = model.Size;
                     }
                     if (itemToEdit.GetType().GetProperty("Price") != null)
                     {

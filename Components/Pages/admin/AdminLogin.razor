@@ -12,7 +12,7 @@
 @using System.Diagnostics
 @inject SessionService sessionService;
 @inject ActionService actionService;
-<h3>LOGIN PAGE</h3>
+<h3>Login</h3>
 <AdminForm ButtonLabel="Log in" Model="Model" OnSubmit="HandleSubmit" message="@message" messageClass="@messageClass" />
 @code {
     private string? message = "";

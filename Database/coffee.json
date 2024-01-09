@@ -1,1 +1,1 @@
-[{"Name":"Latte","CoffeeType":"Fresh Press","Size":null,"Price":120,"index":0,"AddIns":[],"Id":1},{"Name":"Expresso","CoffeeType":"Drip","Size":null,"Price":200,"index":0,"AddIns":[],"Id":2}]
+[{"Name":"Cappuccino","CoffeeType":"Espresso","Size":"Large","Price":100,"index":0,"AddIns":[],"Id":1},{"Name":"Latte","CoffeeType":"big","Size":"big","Price":123,"index":0,"AddIns":[],"Id":2},{"Name":"Mocha","CoffeeType":"Fresh Press","Size":"120ml","Price":999,"index":0,"AddIns":[],"Id":3}]

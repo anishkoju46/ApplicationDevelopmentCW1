@@ -23,6 +23,7 @@
         <tr>
             <th>Name</th>
             <th>CoffeeType</th>
+            <th>Size</th>
             <th>Price</th>
             <th>Action</th>
         </tr>
@@ -35,6 +36,7 @@
                 <tr>
                     <td>@coffee.Name</td>
                     <td>@coffee.CoffeeType</td>
+                    <td>@coffee.Size</td>
                     <td>@coffee.Price</td>
                     <td>
                         <button @onclick="()=>AddToCart(coffee)" class="edit-button">Add to Cart</button>
@@ -51,6 +53,7 @@
         <tr>
             <th>Name</th>
             <th>CoffeeType</th>
+            <th>Size</th>
             <th>Price</th>
             <th>Add-ins</th>
             <th>Action</th>
@@ -65,6 +68,7 @@
                 <tr>
                     <td>@orderedCoffee.Name</td>
                     <td>@orderedCoffee.CoffeeType</td>
+                    <td>@orderedCoffee.Size</td>
                     <td>@orderedCoffee.Price</td>
                     @if (orderedCoffee.AddIns != null && orderedCoffee.AddIns.Count > 0)
                     {
@@ -130,7 +134,7 @@
                 </tr>
             }
         }
-        <p style="text-align: center;">Total price: @CalculateTotalPrice()</p>
+        <p style="text-align: center;">Total price: @CalculateTotalPrice(free)</p>
     </tbody>
 </table>
 @if (!isMember)
@@ -151,10 +155,12 @@
                 </div>
                 <div class="modal-body">
                     <input type="email" @bind="CustomerModel.Email" placeholder="Enter email" />
+                    <div style="display: flex; justify-content: center; margin-top: 20px;">
+                        <button type="button" @onclick="()=>CheckUserExist(CustomerModel)" style="background-color: green; width: 120px;">Check User</button>
+                    </div>
                 </div>
-                <button type="button" class="edit-button" @onclick="()=>CheckUserExist(CustomerModel)">Order</button>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                    <button type="button" @onclick="CloseModal" style="background-color: red; width: 100%; border: none;">Close</button>
                 </div>
             </div>
         </div>
@@ -163,6 +169,12 @@
 
 @code {
     string message = "";
+    bool isRegularCustomer = false;
+
+    bool checkEligable = false;
+    decimal discount = 0;
+    bool isDiscount = false;
+    bool free = false;
     string messageClass = "";
     List<CommonModel>? coffeeList = new List<CommonModel>();
     bool showMemberModel = false;
@@ -203,10 +215,13 @@
             Trace.WriteLine(item.Name);
         }
     }
-    public decimal CalculateTotalPrice()
+    public decimal CalculateTotalPrice(bool free)
     {
         decimal totalPrice = 0;
-
+        if (free)
+        {
+            return totalPrice;
+        }
         foreach (var coffee in orderList)
         {
             totalPrice += coffee.Price;
@@ -219,7 +234,8 @@
                 }
             }
         }
-
+        Trace.WriteLine("This is discount in CalculatePrice: " + discount);
+        totalPrice = totalPrice - (totalPrice * discount / 100);
         return totalPrice;
     }
     protected async void RemoveFromCart(CommonModel orderedCoffee)
@@ -240,16 +256,46 @@
     protected async void CheckUserExist(UserModel user)
     {
         CloseModal();
+        Trace.WriteLine("This isEmail: " + user.Email);
         var result = await staffService.isUserRegistered(user.Email);
         if (result.Success)
         {
-            decimal totalPrice = this.CalculateTotalPrice();
-            @* Order(orderList,user.Email,totalPrice); *@
+            Trace.WriteLine("Found");
+            free = await staffService.getIsFree(user.Email);
+            Trace.WriteLine("This is free: " + free);
+            checkEligable = await staffService.IsEligibleForDiscount(user.Email);
+            Trace.WriteLine("Is user eligible for discount: " + isRegularCustomer);
+            if (checkEligable)
+            {
+                Trace.WriteLine("Yes User is: ");
+                this.discount = 10;
+            }
+            if (!checkEligable)
+            {
+                isRegularCustomer = await staffService.IsRegularCustomer(user.Email);
+            }
+            if (isRegularCustomer)
+            {
+                Trace.WriteLine("Yes User is");
+                this.discount = 10;
+            }
+            Trace.WriteLine("This is discount in Razor: " + isRegularCustomer);
+            Trace.WriteLine("This is discount in Razor: " + free);
+            decimal totalPrice = this.CalculateTotalPrice(free);
             isMember = true;
             email = user.Email;
-            StateHasChanged();
             this.message = result.Message;
             this.messageClass = "success-message";
+            if (this.discount > 0)
+            {
+                this.message = "Discounted Coffee For you for entire 1 month";
+                this.messageClass = "success-message";
+            }
+            if (free)
+            {
+                this.message = "Free Coffee For you";
+                this.messageClass = "success-message";
+            }
         }
         else
         {
@@ -261,9 +307,13 @@
     }
     protected async void Order()
     {
-        decimal totalPrice = this.CalculateTotalPrice();
-        await staffService.TakeOrder(orderList, email, totalPrice);
+        Trace.WriteLine("This is Discoint: " + discount);
+        decimal totalPrice = this.CalculateTotalPrice(free);
+        await staffService.TakeOrder(orderList, email, totalPrice, free);
         await staffService.clearOrderList();
+        isMember = false;
+        discount = 0;
+        message = "Oder Placed Successfully";
         StateHasChanged();
     }
 

@@ -22,6 +22,9 @@
         {
             sessionService.SetCurrentUser(false);
             sessionService.setNeedAuthorized(true);
+            sessionService.setOnlyCoffee(false);
+            sessionService.setCustomerOnly(false);
+            sessionService.SetCurrentUserType(UserType.admin);
             message = result.Message;
             messageClass = "success-message";
             notificationService.Notify(message, messageClass);

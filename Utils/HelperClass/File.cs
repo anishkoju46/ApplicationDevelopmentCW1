@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace CourseWorkAppDev1.Utils.HelperClass;
 public class FileManagement
 {
-   public string DirectoryPath(string dir, string fileName)
+    public string DirectoryPath(string dir, string fileName)
     {
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -15,6 +15,7 @@ public class FileManagement
             throw new InvalidOperationException("Could not find the project directory.");
         }
         var path = Path.Combine(projectDirectory, dir, fileName);
+        Trace.WriteLine("This is Path in FileManagementClass: " + path);
         return path;
     }
 }

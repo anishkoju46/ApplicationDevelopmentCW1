@@ -6,7 +6,6 @@ public class SessionService
 {
 
     public UserType CurrentUserType { get; private set; }
-
     private bool? needAuthorized;
     public event Action OnChange;
     public void NotifyStateChanged() => OnChange?.Invoke();

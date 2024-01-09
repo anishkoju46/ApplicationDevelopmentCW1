@@ -13,12 +13,13 @@
 @inject SessionService sessionService;
 @inject CoffeeService coffeeService;
 @inject ActionService actionService;
-<h3>COFFEES-LIST</h3>
+<h3>Menue</h3>
 <table>
     <thead>
         <tr>
-            <th>CoffeeName</th>
+            <th>Name</th>
             <th>CoffeeType</th>
+            <th>Size</th>
             <th>Price</th>
             <th>Action</th>
         </tr>
@@ -31,6 +32,7 @@
                 <tr>
                     <td>@coffee.Name</td>
                     <td>@coffee.CoffeeType</td>
+                    <td>@coffee.Size</td>
                     <td>@coffee.Price</td>
                     <td>
                         <button @onclick="() => OpenEditModel(coffee)" class="edit-button">Edit</button>
@@ -139,7 +141,8 @@
         var needAuth = await this.NeedAuthentication();
         if (!needAuth)
         {
-            var result = await actionService.Delete<BaseModel>(coffee.Id, "coffee.json");
+            Trace.WriteLine("This is CoffeeID: " + coffee.Id);
+            var result = await actionService.Delete<CoffeeModel>(coffee.Id, "coffee.json");
             if (result.Success)
             {
                 coffeesList.Remove(coffee);

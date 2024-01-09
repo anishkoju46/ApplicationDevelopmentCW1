@@ -2,6 +2,7 @@
 @namespace CourseWorkAppDev1.Pages.admin
 @using CourseWorkAppDev1.Modules.Admin.model;
 @using CourseWorkAppDev1.Modules.Staff.model;
+@using CourseWorkAppDev1.Utils.Model;
 @using CourseWorkAppDev1.Modules.Admin.service;
 @using CourseWorkAppDev1.Utils.HelperServices;
 @inject AdminService adminService;
@@ -10,12 +11,11 @@
 @inject NavigationManager navigationManager;
 @inject ActionService actionService;
 
-<h3>STAFF LIST</h3>
+<h3>Add Staff</h3>
 <table>
     <thead>
         <tr>
-            <th>Staff Name</th>
-            <th>Actions</th>
+            <th>Name</th>
         </tr>
     </thead>
     <tbody>
@@ -57,7 +57,7 @@
 
 @if (!isAuthorization)
 {
-    <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add New Staff</button>
+    <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add Staff</button>
     @if (showAddModal)
     {
         <div class="modal" tabindex="-1" role="dialog" style="display:block;">
@@ -152,7 +152,7 @@
         var noneedAuth = await this.NeedAuthentication();
         if (!noneedAuth)
         {
-            var result = await actionService.Delete<BaseModel>(staff.Id, "staff.json");
+            var result = await actionService.Delete<StaffModel>(staff.Id, "staff.json");
             if (result.Success)
             {
                 staffList.Remove(staff);
@@ -167,17 +167,25 @@
     }
     public async Task Login()
     {
-        var result = await actionService.Login<AdminModel>(adminModel);
-        if (result.Success)
+        if (adminModel.userType == UserType.admin)
         {
-            sessionService.setNeedAuthorized(false);
-            message = result.Message;
-            messageClass = "success-message";
-            CloseModal();
+            var result = await actionService.Login<AdminModel>(adminModel);
+            if (result.Success)
+            {
+                sessionService.setNeedAuthorized(false);
+                message = result.Message;
+                messageClass = "success-message";
+                CloseModal();
+            }
+            else
+            {
+                message = result.Message;
+                messageClass = "error-message";
+            }
         }
         else
         {
-            message = result.Message;
+            message = "You are not authorized to access this page";
             messageClass = "error-message";
         }
     }

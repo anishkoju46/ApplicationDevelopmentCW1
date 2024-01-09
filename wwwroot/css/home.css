@@ -1,0 +1,16 @@
+body {
+    background-color: #798CAB;
+}
+
+.homehome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+    .homehome img {
+        max-width: 100%; 
+        max-height: 100%;
+    }

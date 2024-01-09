@@ -111,7 +111,7 @@ public class StaffService
             if (userList[i].Email == email)
             {
                 Trace.WriteLine("This is Email: " + userList[i].Email);
-                return new CustomType { Success = true, Message = "Success" };
+                return new CustomType { Success = true, Message = "User has been successfully found. You can now proceed with the order." };
             }
         }
         return new CustomType { Success = false, Message = "User Not Found" };
@@ -171,9 +171,10 @@ public class StaffService
         }
 
         var groupedOrders = userOrders.GroupBy(o => new { o.Date.Year, o.Date.Month, o.Date.Day });
+        Trace.WriteLine("This is Grouped Orders: " + groupedOrders.Count());
         var distinctDaysWithOrdersInCurrentMonth = groupedOrders.Count(g => g.Key.Month == DateTime.Now.Month && g.Key.Year == DateTime.Now.Year);
-
-        if (distinctDaysWithOrdersInCurrentMonth >= 2)
+        Trace.WriteLine("This is Distinct Days: " + distinctDaysWithOrdersInCurrentMonth);
+        if (distinctDaysWithOrdersInCurrentMonth >= 26)
         {
             Trace.WriteLine("This is User: ", user.Email);
             var currentMonth = DateTime.Now.Month;

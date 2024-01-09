@@ -65,4 +65,9 @@
         <PackageReference Include="QuestPDF" Version="2023.12.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="reports\days\" />
+      <Folder Include="reports\month\" />
+    </ItemGroup>
+
 </Project>

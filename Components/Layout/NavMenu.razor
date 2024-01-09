@@ -31,7 +31,7 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/login">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
+                    <span class="bi bi-login-nav-menu" aria-hidden="true"></span> Login
                 </NavLink>
             </div>
         }
@@ -40,7 +40,7 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/register">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register Staff
+                    <span class="bi bi-staff-nav-menu-" aria-hidden="true"></span> Register Staff
                 </NavLink>
             </div>
         }
@@ -49,23 +49,28 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/staff/add">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add New Staff
+                    <span class="bi bi-staff-nav-menu" aria-hidden="true"></span> Add New Staff
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/coffee/menue">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add New Coffee
+                    <span class="bi bi-coffee-nav-menu" aria-hidden="true"></span> Add New Coffee
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/coffee/addins">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Add New Add-ins
+                    <span class="bi bi-addins-nav-menu" aria-hidden="true"></span>Add New Add-ins
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/report">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Generate Reports
+                    <span class="bi bi-report-nav-menu" aria-hidden="true"></span> Generate Reports
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/admin/changePassword">
+                    <span class="bi bi-password-nav-menu" aria-hidden="true"></span> Change Password
                 </NavLink>
             </div>
         }
@@ -73,20 +78,25 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/staff/orderCoffee">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Take Order
+                    <span class="bi bi-order-coffee-nav-menu" aria-hidden="true"></span> Take Order
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/staff/addMember">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register New Member
+                    <span class="bi bi-new-member-nav-menu" aria-hidden="true"></span> Register New Member
                 </NavLink>
             </div>
         }
         @if (sessionService.IsUserLoggedIn())
         {
             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/totalTransactions">
+                    <span class="bi bi-transaction-nav-menu" aria-hidden="true"></span> View Transactions
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/logout">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Logout
+                    <span class="bi bi-logout-nav-menu" aria-hidden="true"></span> Logout
                 </NavLink>
             </div>
         }

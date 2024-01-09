@@ -1,0 +1,65 @@
+@page "/totalTransactions"
+@namespace CourseWorkAppDev1.Pages.admin
+@using CourseWorkAppDev1.Utils.Model;
+@using CourseWorkAppDev1.Modules.Admin.service;
+@inject AdminService adminService
+
+<h1>Total Transactions</h1>
+
+@if (transactions == null)
+{
+    <h3>No Orders till now......</h3>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Total Price</th>
+                <th>Coffee Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in transactions)
+            {
+                <tr>
+                    <td>@transaction.Email</td>
+                    <td>@transaction.Date</td>
+                    <td>@transaction.TotalPrice</td>
+                    <td>
+                        @foreach (var coffee in transaction.CoffeeData)
+                        {
+                            <p>@coffee.Name (@coffee.Name) - @coffee.Price</p>
+                            @if (coffee.AddIns != null && coffee.AddIns.Any())
+                            {
+                                <p>Add-ins:</p>
+                                <ul>
+                                    @foreach (var addIn in coffee.AddIns)
+                                    {
+                                        <li>@addIn.Name - @addIn.Price</li>
+                                    }
+                                </ul>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <h2>Total Revenue: @totalRevenue</h2>
+}
+
+@code {
+    private List<OrderModel> transactions;
+    private decimal totalRevenue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await adminService.GetSalesTransactionsAndTotalRevenue();
+        transactions = result.Item1;
+        totalRevenue = result.Item2;
+    }
+} 
+

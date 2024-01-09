@@ -11,7 +11,7 @@ public class ActionService
     {
         this.authentication = authentication;
     }
-
+    public SessionService sessionService = new SessionService();
     public async Task<CustomType> Register<T>(UserModel data) where T : UserModel, new()
     {
         try
@@ -29,6 +29,7 @@ public class ActionService
             }
             int maxId = userList.Any() ? userList.Max(s => s.Id) : 0;
             data.Id = maxId + 1;
+            sessionService.setId(data.Id);
             if (data.Password != null)
             {
                 data.Password = this.authentication.GenerateHash(data.Password);
@@ -86,8 +87,8 @@ public class ActionService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            return new CustomType { Success = false, Message = ex.Message };
+            Trace.WriteLine("This is Exception " + ex);
+            return new CustomType { Success = false, Message = "Please Select User Type" };
         }
     }
 
@@ -122,5 +123,8 @@ public class ActionService
             return new CustomType { Success = false, Message = error.Message };
         }
     }
-
+    public Task<CustomType> logOut()
+    {
+        return Task.FromResult(new CustomType { Success = true, Message = "Logout Success" });
+    }
 }

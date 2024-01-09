@@ -6,7 +6,6 @@
 <EditForm Model="Model" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
     <div class="form-group">
-        <p class="@messageClass">@message</p>
         <label for="username">Username:</label>
         <input required id="username" @bind="Model.Username" />
         <ValidationMessage For="@(() => Model.Username)" />
@@ -19,9 +18,9 @@
             <ValidationMessage For="@(() => Model.Password)" />
         </div>
         <div class="form-group">
-            <label for="userType">UserType:</label>
+            <label for="userType">User Category:</label>
             <select @bind="Model.userType">
-                <option value="">Choose user type</option>
+                <option value="">Select User Category</option>
                 <option value="admin">Admin</option>
                 <option value="staff">Staff</option>
             </select>

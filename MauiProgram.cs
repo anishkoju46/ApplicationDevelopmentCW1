@@ -10,6 +10,7 @@ namespace CourseWorkAppDev1
     {
         public static MauiApp CreateMauiApp()
         {
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()

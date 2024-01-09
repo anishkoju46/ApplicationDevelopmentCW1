@@ -110,10 +110,6 @@ public class CoffeeService
                     {
                         itemToEdit.CoffeeType = model.CoffeeType;
                     }
-                    if (itemToEdit.GetType().GetProperty("Size") != null)
-                    {
-                        itemToEdit.Size = model.Size;
-                    }
                     if (itemToEdit.GetType().GetProperty("Price") != null)
                     {
                         itemToEdit.Price = model.Price;

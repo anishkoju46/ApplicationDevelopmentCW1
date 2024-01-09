@@ -5,9 +5,15 @@
 @using CourseWorkAppDev1.Utils.HelperClass;
 @using System.Diagnostics
 @implements IDisposable
-<div class="top-row ps-3 navbar navbar-dark">
+
+@* <head>
+    <!-- Option 1: Include in HTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+</head> *@
+
+<div class="top-row ps-3 navbar navbar-dark" style="background-color: #333C4B;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">CourseWorkAppDev1</a>
+        <a class="navbar-brand" href="">CourseWorkAppDev1 </a>
     </div>
 </div>
 
@@ -34,7 +40,7 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/register">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register Staff
                 </NavLink>
             </div>
         }
@@ -43,23 +49,23 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/staff/add">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add Staff
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add New Staff
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/coffee/menue">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Coffee
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add New Coffee
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/coffee/addins">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Addins
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Add New Add-ins
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/report">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Generate Report
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Generate Reports
                 </NavLink>
             </div>
         }
@@ -72,7 +78,7 @@
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/staff/addMember">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register Member
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register New Member
                 </NavLink>
             </div>
         }

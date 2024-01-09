@@ -8,7 +8,24 @@
 @inject AdminService adminService;
 @page "/admin/logout"
 
-<button @onclick="HandleSubmit">Logout</button>
+<head>
+    <link rel="stylesheet" href="css/home.css" />
+</head>
+
+<div>
+
+    <div>
+        <img src="images/bye.jpeg" />
+    </div>
+
+    <div class="d-flex justify-content-center mt-5">
+        <button @onclick="HandleSubmit" class="btn btn-primary">Logout</button>
+    </div>
+
+
+</div>
+
+
 
 
 

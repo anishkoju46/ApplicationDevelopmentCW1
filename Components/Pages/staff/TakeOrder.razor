@@ -16,14 +16,23 @@
 @inject CoffeeService coffeeService;
 @inject ActionService actionService;
 @inject StaffService staffService;
+<br />
+<br />
+<div class="input-group mb-3">
 
-<h3>Menue</h3>
+    <div><input type="text" class="form-control" placeholder="Aa..." aria-label="Search" aria-describedby="search-button"></div>
+
+    <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="button" id="search-button">Search</button>
+
+    </div>
+</div>
+<h3>TODAY's MENU</h3>
 <table>
     <thead>
         <tr>
             <th>Name</th>
             <th>CoffeeType</th>
-            <th>Size</th>
             <th>Price</th>
             <th>Action</th>
         </tr>
@@ -36,10 +45,9 @@
                 <tr>
                     <td>@coffee.Name</td>
                     <td>@coffee.CoffeeType</td>
-                    <td>@coffee.Size</td>
                     <td>@coffee.Price</td>
                     <td>
-                        <button @onclick="()=>AddToCart(coffee)" class="edit-button">Add to Cart</button>
+                        <button @onclick="()=>AddToCart(coffee)" class="edit-button">ORDER</button>
                     </td>
                 </tr>
             }
@@ -53,7 +61,6 @@
         <tr>
             <th>Name</th>
             <th>CoffeeType</th>
-            <th>Size</th>
             <th>Price</th>
             <th>Add-ins</th>
             <th>Action</th>
@@ -68,7 +75,6 @@
                 <tr>
                     <td>@orderedCoffee.Name</td>
                     <td>@orderedCoffee.CoffeeType</td>
-                    <td>@orderedCoffee.Size</td>
                     <td>@orderedCoffee.Price</td>
                     @if (orderedCoffee.AddIns != null && orderedCoffee.AddIns.Count > 0)
                     {
@@ -88,8 +94,8 @@
                         </td>
                     }
                     <td>
-                        <button @onclick="()=>RemoveFromCart(orderedCoffee)" class="delete-button">Remove</button>
                         <button type="button" class="btn btn-primary" @onclick="OpenAddModal">Add Addings</button>
+                        <button @onclick="()=>RemoveFromCart(orderedCoffee)" class="delete-button">Discard</button>
                         @if (showAddModal)
                         {
                             <div class="modal" tabindex="-1" role="dialog" style="display:block;">
@@ -139,7 +145,7 @@
 </table>
 @if (!isMember)
 {
-    <button @onclick="OpenMemberModel" class="edit-button">Check Member</button>
+    <button @onclick="OpenMemberModel" class="btn btn-primary" >Verify Membership</button>
 }
 @if (isMember)
 {
@@ -147,24 +153,44 @@
 }
 @if (showMemberModel)
 {
-    <div class="modal" tabindex="-1" role="dialog" style="display:block;">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Staff</h5>
-                </div>
-                <div class="modal-body">
-                    <input type="email" @bind="CustomerModel.Email" placeholder="Enter email" />
-                    <div style="display: flex; justify-content: center; margin-top: 20px;">
-                        <button type="button" @onclick="()=>CheckUserExist(CustomerModel)" style="background-color: green; width: 120px;">Check User</button>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style>
+            /* Add any custom styles here */
+        </style>
+        <title>Your Page Title</title>
+    </head>
+    <body>
+
+        <div class="modal mt-5" tabindex="-1" role="dialog" style="display: block;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Member Verification</h5>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" @onclick="CloseModal" style="background-color: red; width: 100%; border: none;">Close</button>
+                    <div class="modal-body">
+                        <input type="email" class="form-control" @bind="CustomerModel.Email" placeholder="Enter email" />
+                        <div style="display: flex; justify-content: center; margin-top: 20px;">
+                            <button type="button" class="btn btn-success" @onclick="()=>CheckUserExist(CustomerModel)">Verify</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" @onclick="CloseModal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+    </html>
+
 }
 
 @code {
@@ -203,7 +229,6 @@
             {
                 Name = coffee.Name,
                 CoffeeType = coffee.CoffeeType,
-                Size = coffee.Size,
                 Price = coffee.Price,
                 index = orderList.Count
             };
@@ -313,7 +338,7 @@
         await staffService.clearOrderList();
         isMember = false;
         discount = 0;
-        message = "Oder Placed Successfully";
+        message = "Order Placed Successfully";
         StateHasChanged();
     }
 
@@ -331,3 +356,19 @@
         showMemberModel = false;
     }
 }
+
+<script>
+    document.getElementById('search-button').addEventListener('click', function () {
+        var searchValue = document.querySelector('.form-control').value.toLowerCase();
+        var rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(function (row) {
+            var data = row.innerText.toLowerCase();
+            if (data.indexOf(searchValue) !== -1) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>

@@ -1,13 +1,17 @@
+
+
 table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0 15px;
+    
 }
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 20px;
     margin: 15px 0;
+    text-align: center;
 }
 
 th {
@@ -21,16 +25,20 @@ tr {
 }
 
 .edit-button {
-    background-color: green;
+    padding: 8px 12px;
+    background-color: #3b9c27;
     color: white;
     border: none;
+    font-weight: bold;
 }
 
 .delete-button {
+    padding: 8px 12px;
     margin-top: 5px;
-    background-color: red;
+    background-color: #f22c2c;
     color: white;
     border: none;
+    font-weight: bold;
 }
 
 .fail-message {

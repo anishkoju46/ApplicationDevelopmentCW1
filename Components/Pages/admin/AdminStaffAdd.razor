@@ -11,11 +11,24 @@
 @inject NavigationManager navigationManager;
 @inject ActionService actionService;
 
-<h3>Add Staff</h3>
+<br />
+<br />
+<div class="input-group mb-3">
+
+    <div><input type="text" class="form-control" placeholder="Aa..." aria-label="Search" aria-describedby="search-button"></div>
+
+    <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="button" id="search-button">Search</button>
+
+    </div>
+</div>
+
+<h3>STAFF LIST</h3>
 <table>
     <thead>
         <tr>
             <th>Name</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -26,7 +39,8 @@
                 <tr>
                     <td>@staff.Username</td>
                     <td>
-                        <button @onclick="() => OpenEditModel(staff)" class="edit-button">Edit</button>
+                        <button @onclick="() => OpenEditModel(staff)" class="edit-button">Edit</button> 
+                        <br />
                         <button @onclick="()=>deleteStaff(staff)" class="delete-button">Delete</button>
                         @if (showEditModel)
                         {
@@ -217,3 +231,19 @@
         isAuthorization = false;
     }
 }
+
+<script>
+    document.getElementById('search-button').addEventListener('click', function () {
+        var searchValue = document.querySelector('.form-control').value.toLowerCase();
+        var rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(function (row) {
+            var data = row.innerText.toLowerCase();
+            if (data.indexOf(searchValue) !== -1) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>

@@ -152,7 +152,7 @@ public class AdminService
                                 .PaddingVertical((float)0.5, Unit.Centimetre)
                                 .Column(column =>
                                 {
-                                    column.Item().Text($"Total Revenue:  {totalRevenue}").FontSize(16).FontColor(Colors.Red.Darken1);
+                                    column.Item().Text($"Total Revenue:  {totalRevenue}\n________________________________________________").FontSize(16).FontColor(Colors.Red.Darken1);
 
                                     if (reportType == "daily")
                                     {
@@ -181,6 +181,7 @@ public class AdminService
                                                 grid.Item().Text(group.Key);
                                                 grid.Item().Text(group.Count().ToString());
                                             }
+                                            grid.Item().Text("--------------------------------------------------").FontColor(Colors.Black).SemiBold();
                                         });
 
                                         column.Item().Text("Top 5 Add-ins Sold:").FontSize(16).FontColor(Colors.Amber.Darken1);
@@ -194,6 +195,7 @@ public class AdminService
                                                 grid.Item().Text(addInGroup.Key);
                                                 grid.Item().Text(addInGroup.Count().ToString());
                                             }
+                                            grid.Item().Text("--------------------------------------------------").FontColor(Colors.Black).SemiBold();
                                         });
                                     }
                                 });
